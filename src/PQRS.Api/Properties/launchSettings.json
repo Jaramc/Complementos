@@ -1,0 +1,53 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:7647",
+      "sslPort": 44341
+    }
+  },
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5189",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Issuer": "PQRS.SaaS.Platform",
+        "JwtSettings__Audience": "PQRS.SaaS.Clients",
+        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
+        "JwtSettings__ExpiryMinutes": "60"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7168;http://localhost:5189",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Issuer": "PQRS.SaaS.Platform",
+        "JwtSettings__Audience": "PQRS.SaaS.Clients",
+        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
+        "JwtSettings__ExpiryMinutes": "60"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Issuer": "PQRS.SaaS.Platform",
+        "JwtSettings__Audience": "PQRS.SaaS.Clients",
+        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
+        "JwtSettings__ExpiryMinutes": "60"
+      }
+    }
+  }
+}

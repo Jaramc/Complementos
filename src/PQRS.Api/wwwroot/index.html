@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PQRS | Widget local</title>
+  <style>
+    :root { color-scheme: light; font-family: Georgia, 'Times New Roman', serif; color: #19212b; background: #eef3f2; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #eef3f2 0%, #f9f7f1 52%, #dce9e8 100%); }
+    main { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 14vh 0; }
+    p { max-width: 560px; color: #53636d; font: 16px/1.65 ui-sans-serif, system-ui, sans-serif; }
+    .kicker { margin: 0 0 14px; color: #176b87; font: 700 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 680px; margin: 0; font-size: clamp(42px, 8vw, 86px); line-height: .98; font-weight: 500; letter-spacing: -0.03em; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="kicker">Empresa Demo / entorno local</p>
+    <h1>Encuentra una respuesta. Radica cuando haga falta.</h1>
+    <p>Esta página carga el widget PQRS autónomo para probar consultas de conocimiento y radicación de solicitudes.</p>
+  </main>
+  <script src="/pqrs-widget.js" data-tenant="5303da30-d1f9-4a61-922f-fd4319e45037" data-api-url=""></script>
+</body>
+</html>
