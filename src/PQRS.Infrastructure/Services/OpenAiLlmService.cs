@@ -21,7 +21,9 @@ public sealed class OpenAiLlmService : ILlmService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(systemPrompt);
         ArgumentException.ThrowIfNullOrWhiteSpace(userPrompt);
-        var apiKey = _configuration["OpenAI:ApiKey"] ?? _configuration["OPENAI_API_KEY"];
+        var apiKey = _configuration["OPENAI_API_KEY"]
+            ?? _configuration["OpenAI:ApiKey"]
+            ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             return CreateFallbackResponse(systemPrompt, userPrompt, jsonMode);

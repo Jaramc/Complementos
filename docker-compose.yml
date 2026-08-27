@@ -34,6 +34,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=pqrs;Username=pqrs_app;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
       JwtSettings__Issuer: PQRS.SaaS.Platform
       JwtSettings__Audience: PQRS.SaaS.Clients
       JwtSettings__SecretKey: ${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}

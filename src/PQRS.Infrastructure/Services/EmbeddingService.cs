@@ -22,7 +22,9 @@ public sealed class EmbeddingService : IEmbeddingService
     public async Task<Vector> GenerateEmbeddingAsync(string text, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
-        var apiKey = _configuration["OpenAI:ApiKey"] ?? _configuration["OPENAI_API_KEY"];
+        var apiKey = _configuration["OPENAI_API_KEY"]
+            ?? _configuration["OpenAI:ApiKey"]
+            ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             return CreateDeterministicEmbedding(text);
