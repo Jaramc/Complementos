@@ -44,6 +44,20 @@ public sealed class TenantStore : ITenantStore
                 cancellationToken));
     }
 
+    public Task<PQRS.Domain.Entities.Tenant?> GetActiveByOriginAsync(string origin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(origin))
+        {
+            return Task.FromResult<PQRS.Domain.Entities.Tenant?>(null);
+        }
+
+        var normalizedOrigin = origin.Trim().TrimEnd('/');
+        return GetOrCreateAsync($"tenant:origin:{normalizedOrigin.ToLowerInvariant()}", cancellationToken, () =>
+            _dbContext.Tenants.AsNoTracking().FirstOrDefaultAsync(
+                tenant => tenant.IsActive && tenant.AllowedOrigins.Contains(normalizedOrigin),
+                cancellationToken));
+    }
+
     public static string HashApiKey(string apiKey)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);

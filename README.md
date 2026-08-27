@@ -33,12 +33,21 @@ Todas las entidades tenant-bound usan un filtro global de EF Core. El `TenantId`
 
 ## Inicio rapido
 
-Crea un archivo `.env` en la raiz (no se versiona). La variable `JWT_SECRET_KEY` es estrictamente obligatoria vía `.env` o variable de entorno en todos los entornos (desarrollo, staging y producción), no solo en dev:
+Crea un archivo `.env` en la raiz (no se versiona). La variable `JWT_SECRET_KEY` es estrictamente obligatoria vía `.env` o variable de entorno en todos los entornos (desarrollo, staging y producción):
 
 ```dotenv
 POSTGRES_PASSWORD=local-development-password
-JWT_SECRET_KEY=super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!
+JWT_SECRET_KEY=<tu_clave_secreta_minimo_32_bytes>
 ```
+
+> **Nota:** Genera una clave aleatoria segura de al menos 32 bytes (256 bits) para `JWT_SECRET_KEY`, por ejemplo ejecutando:
+> ```bash
+> openssl rand -base64 32
+> ```
+> o en PowerShell:
+> ```powershell
+> [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }))
+> ```
 
 Levanta la plataforma:
 

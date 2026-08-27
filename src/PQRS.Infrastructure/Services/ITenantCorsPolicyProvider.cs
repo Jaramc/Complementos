@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,71 +10,55 @@ public interface ITenantCorsPolicyProvider : ICorsPolicyProvider
 
 public sealed class TenantCorsPolicyProvider : ITenantCorsPolicyProvider
 {
-    private static readonly string[] FallbackOrigins = ["http://localhost:5173", "http://localhost:3000"];
-
-    private static readonly CorsPolicy FallbackPolicy = new CorsPolicyBuilder()
-        .WithOrigins(FallbackOrigins)
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials()
-        .Build();
+    private static readonly HashSet<string> FallbackOrigins = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "http://localhost:5173",
+        "http://localhost:3000"
+    };
 
     public async Task<CorsPolicy?> GetPolicyAsync(HttpContext context, string? policyName)
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        var origin = context.Request.Headers.Origin.FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(origin))
+        {
+            return BuildFallbackPolicy();
+        }
+
+        var normalizedOrigin = origin.Trim().TrimEnd('/');
+        if (FallbackOrigins.Contains(normalizedOrigin))
+        {
+            return BuildPolicy(origin);
+        }
+
         var tenantStore = context.RequestServices.GetService<ITenantStore>();
-        if (tenantStore is null)
+        if (tenantStore is not null)
         {
-            return FallbackPolicy;
-        }
-
-        var cancellationToken = context.RequestAborted;
-
-        var tenantHeader = context.Request.Headers["X-Tenant-Id"].FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(tenantHeader) && Guid.TryParse(tenantHeader, out var tenantId))
-        {
-            var tenant = await tenantStore.GetActiveByIdAsync(tenantId, cancellationToken).ConfigureAwait(false);
+            var tenant = await tenantStore.GetActiveByOriginAsync(normalizedOrigin, context.RequestAborted).ConfigureAwait(false);
             if (tenant is not null)
             {
-                return BuildPolicy(tenant.AllowedOrigins);
+                return BuildPolicy(origin);
             }
         }
 
-        var apiKey = context.Request.Headers["X-API-Key"].FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            var apiKeyHash = TenantStore.HashApiKey(apiKey);
-            var tenant = await tenantStore.GetActiveByApiKeyHashAsync(apiKeyHash, cancellationToken).ConfigureAwait(false);
-            if (tenant is not null)
-            {
-                return BuildPolicy(tenant.AllowedOrigins);
-            }
-        }
-
-        var tenantClaim = context.User?.FindFirstValue("tenant_id");
-        if (!string.IsNullOrWhiteSpace(tenantClaim) && Guid.TryParse(tenantClaim, out var claimTenantId))
-        {
-            var tenant = await tenantStore.GetActiveByIdAsync(claimTenantId, cancellationToken).ConfigureAwait(false);
-            if (tenant is not null)
-            {
-                return BuildPolicy(tenant.AllowedOrigins);
-            }
-        }
-
-        return FallbackPolicy;
+        return null;
     }
 
-    private static CorsPolicy BuildPolicy(IEnumerable<string> allowedOrigins)
+    private static CorsPolicy BuildPolicy(string origin)
     {
-        var origins = allowedOrigins
-            .Concat(FallbackOrigins)
-            .Where(origin => !string.IsNullOrWhiteSpace(origin))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
         return new CorsPolicyBuilder()
-            .WithOrigins(origins)
+            .WithOrigins(origin)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .Build();
+    }
+
+    private static CorsPolicy BuildFallbackPolicy()
+    {
+        return new CorsPolicyBuilder()
+            .WithOrigins("http://localhost:5173", "http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
