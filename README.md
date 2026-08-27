@@ -71,13 +71,13 @@ Las credenciales anteriores son exclusivamente para desarrollo. Rota la clave JW
 
 ```powershell
 dotnet build PQRS.sln
-dotnet test tests/PQRS.Tests/PQRS.Tests.csproj
+dotnet test tests/PQRS.Infrastructure.Tests/PQRS.Infrastructure.Tests.csproj
 
 # Debe mostrar vector instalado
 docker exec complementos-postgres-1 psql -U pqrs_app -d pqrs -c "SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';"
 ```
 
-Las pruebas de `TenantIsolationTests` cubren filtro global, bloqueo de escrituras cross-tenant y rechazo del middleware sin credenciales.
+Las pruebas de `TenantIsolationTests` cubren filtro global, bloqueo de escrituras cross-tenant, autoasignacion del tenant y rechazo del middleware sin credenciales.
 
 ## Autenticacion
 

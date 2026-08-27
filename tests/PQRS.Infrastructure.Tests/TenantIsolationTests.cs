@@ -9,7 +9,7 @@ using PQRS.Infrastructure.Persistence;
 using PQRS.Infrastructure.Services;
 using Xunit;
 
-namespace PQRS.Tests;
+namespace PQRS.Infrastructure.Tests;
 
 public sealed class TenantIsolationTests
 {
@@ -51,6 +51,19 @@ public sealed class TenantIsolationTests
     }
 
     [Fact]
+    public async Task SaveChangesAsync_AssignsActiveTenantId_WhenNewEntityHasEmptyTenantGuid()
+    {
+        var tenantA = Guid.NewGuid();
+        await using var context = CreateContext(tenantA, Guid.NewGuid().ToString(), out _);
+        var newTicket = new Ticket(Guid.Empty, "NEW-001", "Customer", "customer@example.com", "Subject", "Description", PQRS.Domain.Enums.TicketType.Peticion);
+        context.Tickets.Add(newTicket);
+
+        await context.SaveChangesAsync();
+
+        Assert.Equal(tenantA, newTicket.TenantId);
+    }
+
+    [Fact]
     public async Task TenantResolutionMiddleware_RejectsRequestWithoutValidTenantCredentials()
     {
         var currentTenant = new CurrentTenantService();
@@ -72,9 +85,7 @@ public sealed class TenantIsolationTests
     {
         tenantService = new CurrentTenantService();
         tenantService.SetTenant(tenantId);
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName)
-            .Options;
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(databaseName).Options;
         return new ApplicationDbContext(options, tenantService);
     }
 

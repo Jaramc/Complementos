@@ -11,7 +11,7 @@ public sealed class Ticket : ITenantEntity
 
     public Ticket(Guid tenantId, string trackingNumber, string customerName, string customerEmail, string subject, string description, TicketType type)
     {
-        TenantId = RequireTenant(tenantId);
+        TenantId = tenantId;
         TrackingNumber = RequireText(trackingNumber, nameof(trackingNumber));
         CustomerName = RequireText(customerName, nameof(customerName));
         CustomerEmail = RequireText(customerEmail, nameof(customerEmail));
@@ -65,10 +65,6 @@ public sealed class Ticket : ITenantEntity
     {
         Status = status;
     }
-
-    private static Guid RequireTenant(Guid tenantId) => tenantId == Guid.Empty
-        ? throw new ArgumentException("TenantId must not be empty.", nameof(tenantId))
-        : tenantId;
 
     private static string RequireText(string value, string parameterName)
     {
