@@ -1,5 +1,6 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import type { TicketCreatedAlert } from '../types';
+import { normalizePriority, normalizeSentiment, normalizeTicketType } from '../utils/normalizers';
 
 export class SignalRService {
   private connection: HubConnection | null = null;
@@ -22,6 +23,9 @@ export class SignalRService {
     this.connection.on('ReceiveTicketAlert', (alert: TicketCreatedAlert) => {
       const enrichedAlert: TicketCreatedAlert = {
         ...alert,
+        type: normalizeTicketType(alert.type),
+        priority: normalizePriority(alert.priority),
+        sentiment: normalizeSentiment(alert.sentiment),
         timestamp: new Date().toISOString(),
         read: false,
       };

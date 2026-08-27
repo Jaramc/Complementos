@@ -21,6 +21,7 @@ import { PriorityBadge, SentimentBadge, StatusBadge, TypeBadge } from '../compon
 import { CardSkeleton, TableSkeleton } from '../components/common/Skeleton';
 import { useSignalR } from '../context/useSignalR';
 import type { Ticket, TicketStatus } from '../types';
+import { normalizePriority, normalizeSentiment, normalizeTicketStatus, normalizeTicketType } from '../utils/normalizers';
 
 export function TicketsPage() {
   const [searchParams] = useSearchParams();
@@ -92,9 +93,9 @@ export function TicketsPage() {
   // KPIs
   const stats = useMemo(() => {
     const total = tickets.length;
-    const critical = tickets.filter((t) => t.priority === 'High' || t.sentiment === 'Negative').length;
-    const resolved = tickets.filter((t) => t.status === 'Resolved' || t.status === 'Closed').length;
-    const positive = tickets.filter((t) => t.sentiment === 'Positive').length;
+    const critical = tickets.filter((t) => normalizePriority(t.priority) === 'High' || normalizeSentiment(t.sentiment) === 'Negative').length;
+    const resolved = tickets.filter((t) => ['Resolved', 'Closed'].includes(normalizeTicketStatus(t.status))).length;
+    const positive = tickets.filter((t) => normalizeSentiment(t.sentiment) === 'Positive').length;
     const deflectionRate = total > 0 ? Math.round((resolved / total) * 100) : 0;
     const positiveRate = total > 0 ? Math.round((positive / total) * 100) : 0;
 
@@ -111,9 +112,9 @@ export function TicketsPage() {
         t.customerName.toLowerCase().includes(search.toLowerCase()) ||
         t.customerEmail.toLowerCase().includes(search.toLowerCase());
 
-      const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
-      const matchesPriority = priorityFilter === 'ALL' || t.priority === priorityFilter;
-      const matchesType = typeFilter === 'ALL' || t.type === typeFilter;
+      const matchesStatus = statusFilter === 'ALL' || normalizeTicketStatus(t.status) === statusFilter;
+      const matchesPriority = priorityFilter === 'ALL' || normalizePriority(t.priority) === priorityFilter;
+      const matchesType = typeFilter === 'ALL' || normalizeTicketType(t.type) === typeFilter;
 
       return matchesSearch && matchesStatus && matchesPriority && matchesType;
     });

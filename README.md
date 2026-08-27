@@ -208,9 +208,11 @@ Sin API key, el entorno usa embeddings y respuestas locales deterministas. Para 
 
 ```dotenv
 OPENAI_API_KEY=tu-clave
+# Opcional; por defecto: gpt-5.6-luna
+OPENAI_CHAT_MODEL=gpt-5.6-luna
 ```
 
-El proveedor usa `text-embedding-3-small` con 1536 dimensiones y `gpt-4o-mini` para completions.
+El proveedor usa `text-embedding-3-small` con 1536 dimensiones y `gpt-5.6-luna` para completions por defecto.
 
 ## Migraciones
 

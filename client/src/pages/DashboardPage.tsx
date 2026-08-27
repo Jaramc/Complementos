@@ -18,6 +18,7 @@ import { CardSkeleton } from '../components/common/Skeleton';
 import { useAuth } from '../context/useAuth';
 import { useSignalR } from '../context/useSignalR';
 import type { Ticket as TicketTypeModel } from '../types';
+import { normalizePriority, normalizeSentiment, normalizeTicketStatus, normalizeTicketType } from '../utils/normalizers';
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -34,10 +35,10 @@ export function DashboardPage() {
   }, [alerts]);
 
   const totalTickets = tickets.length;
-  const criticalTickets = tickets.filter((t) => t.priority === 'High' || t.sentiment === 'Negative').length;
-  const resolvedTickets = tickets.filter((t) => t.status === 'Resolved' || t.status === 'Closed').length;
-  const inProgressTickets = tickets.filter((t) => t.status === 'InProgress').length;
-  const pendingTickets = tickets.filter((t) => t.status === 'Pending').length;
+  const criticalTickets = tickets.filter((t) => normalizePriority(t.priority) === 'High' || normalizeSentiment(t.sentiment) === 'Negative').length;
+  const resolvedTickets = tickets.filter((t) => ['Resolved', 'Closed'].includes(normalizeTicketStatus(t.status))).length;
+  const inProgressTickets = tickets.filter((t) => normalizeTicketStatus(t.status) === 'InProgress').length;
+  const pendingTickets = tickets.filter((t) => normalizeTicketStatus(t.status) === 'Pending').length;
 
   const resolutionRate = totalTickets > 0 ? Math.round((resolvedTickets / totalTickets) * 100) : 0;
   const recentTickets = tickets.slice(0, 5);
@@ -259,7 +260,9 @@ export function DashboardPage() {
               >
                 <div className="flex items-start gap-3">
                   <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-light/60 font-bold text-brand-wine text-xs">
-                    {ticket.type.charAt(0)}
+                    <span className="font-semibold">
+                      {normalizeTicketType(ticket.type).charAt(0)}
+                    </span>
                   </span>
                   <div>
                     <div className="flex items-center gap-2">

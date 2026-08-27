@@ -30,19 +30,30 @@ public sealed class EmbeddingService : IEmbeddingService
             return CreateDeterministicEmbedding(text);
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/embeddings");
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-        request.Content = JsonContent.Create(new { model = "text-embedding-3-small", input = text });
-        using var response = await _httpClientFactory.CreateClient("OpenAI").SendAsync(request, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false), cancellationToken: cancellationToken).ConfigureAwait(false);
-        var embedding = document.RootElement.GetProperty("data")[0].GetProperty("embedding").EnumerateArray().Select(value => value.GetSingle()).ToArray();
-        if (embedding.Length != Dimensions)
+        try
         {
-            throw new InvalidOperationException($"OpenAI returned {embedding.Length} dimensions; expected {Dimensions}.");
-        }
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/embeddings");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            request.Content = JsonContent.Create(new { model = "text-embedding-3-small", input = text });
+            using var response = await _httpClientFactory.CreateClient("OpenAI").SendAsync(request, cancellationToken).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false), cancellationToken: cancellationToken).ConfigureAwait(false);
+            var embedding = document.RootElement.GetProperty("data")[0].GetProperty("embedding").EnumerateArray().Select(value => value.GetSingle()).ToArray();
+            if (embedding.Length != Dimensions)
+            {
+                return CreateDeterministicEmbedding(text);
+            }
 
-        return new Vector(embedding);
+            return new Vector(embedding);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return CreateDeterministicEmbedding(text);
+        }
     }
 
     private static Vector CreateDeterministicEmbedding(string text)
