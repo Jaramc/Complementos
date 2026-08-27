@@ -83,3 +83,36 @@ export class SignalRService {
 }
 
 export const signalRService = new SignalRService();
+
+let defaultConnection: HubConnection | null = null;
+
+export const initSignalR = (token: string, onTicketAlert: (ticket: TicketCreatedAlert) => void): HubConnection => {
+  if (defaultConnection) {
+    defaultConnection.stop();
+  }
+
+  defaultConnection = new HubConnectionBuilder()
+    .withUrl((import.meta.env.VITE_HUB_URL ?? 'http://localhost:8080') + '/hubs/tickets', {
+      accessTokenFactory: () => token,
+    })
+    .withAutomaticReconnect()
+    .build();
+
+  defaultConnection.on('ReceiveTicketAlert', (ticket: TicketCreatedAlert) => {
+    onTicketAlert(ticket);
+  });
+
+  defaultConnection.start().catch((err) => {
+    console.error('[SignalR] Error al conectar:', err);
+  });
+
+  return defaultConnection;
+};
+
+export const stopSignalR = (): void => {
+  if (defaultConnection) {
+    defaultConnection.stop();
+    defaultConnection = null;
+  }
+};
+
