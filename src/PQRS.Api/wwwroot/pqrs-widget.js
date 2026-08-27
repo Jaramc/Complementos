@@ -17,7 +17,7 @@
     constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      this.state = { view: 'chat', loading: false, answer: null, trackingNumber: null, error: null };
+      this.state = { view: 'chat', loading: false, answer: null, matchedArticleIds: [], trackingNumber: null, error: null };
       this.render();
     }
 
@@ -94,7 +94,11 @@
 
     bindActions() {
       this.shadowRoot.querySelector('[data-action="close"]')?.addEventListener('click', () => this.close());
-      this.shadowRoot.querySelector('[data-action="resolved"]')?.addEventListener('click', () => { this.state = { ...this.state, answer: null, view: 'chat' }; this.close(); });
+      this.shadowRoot.querySelector('[data-action="resolved"]')?.addEventListener('click', async () => {
+        const articleIds = this.state.matchedArticleIds || [];
+        await this.request('/api/v1/widget/rag-deflections', { articleIds }, () => {});
+        this.close();
+      });
       this.shadowRoot.querySelector('[data-action="formal"]')?.addEventListener('click', () => { this.state = { ...this.state, view: 'form', error: null }; this.render(); });
       this.shadowRoot.querySelector('#pqrs-rag-form')?.addEventListener('submit', (event) => this.search(event));
       this.shadowRoot.querySelector('#pqrs-ticket-form')?.addEventListener('submit', (event) => this.createTicket(event));
@@ -106,6 +110,7 @@
       if (!query) { this.state.error = 'Escribe una pregunta para continuar.'; this.render(); return; }
       await this.request('/api/v1/widget/rag-search', { query }, (result) => {
         this.state.answer = result.hasAnswer ? result.answer : null;
+        this.state.matchedArticleIds = result.hasAnswer && Array.isArray(result.matchedArticleIds) ? result.matchedArticleIds : [];
         this.state.error = result.hasAnswer ? null : 'No encontramos una respuesta automática para esta consulta.';
         this.state.loading = false;
         this.render();
@@ -138,7 +143,7 @@
     }
 
     close() {
-      this.state = { view: 'chat', loading: false, answer: null, trackingNumber: null, error: null };
+      this.state = { view: 'chat', loading: false, answer: null, matchedArticleIds: [], trackingNumber: null, error: null };
       this.render();
       const drawer = this.shadowRoot.querySelector('.drawer');
       drawer.hidden = true;

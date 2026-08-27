@@ -80,7 +80,7 @@ public sealed class TicketService : ITicketService
         new(ticket.Id, ticket.TrackingNumber, ticket.Type, ticket.Priority, (PQRS.Domain.Enums.SentimentType)ticket.Sentiment, ticket.Summary ?? string.Empty);
 
     private static TicketResponseDto ToResponse(Ticket ticket) =>
-        new(ticket.Id, ticket.TenantId, ticket.TrackingNumber, ticket.CustomerName, ticket.CustomerEmail, ticket.Subject, ticket.Description, ticket.Type, ticket.Status, ticket.Priority, ticket.Sentiment, ticket.Summary, ticket.ResolvedByRag, ticket.CreatedAtUtc);
+        new(ticket.Id, ticket.TenantId, ticket.TrackingNumber, ticket.CustomerName, ticket.CustomerEmail, ticket.Subject, ticket.Description, ticket.Type, ticket.Status, ticket.Priority, ticket.Sentiment, ticket.Summary, ticket.CreatedAtUtc);
 
     private static string RequireText(string value, string parameterName = "value")
     {

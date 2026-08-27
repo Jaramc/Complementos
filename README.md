@@ -33,7 +33,7 @@ Todas las entidades tenant-bound usan un filtro global de EF Core. El `TenantId`
 
 ## Inicio rapido
 
-Crea un archivo `.env` en la raiz (no se versiona):
+Crea un archivo `.env` en la raiz (no se versiona). La variable `JWT_SECRET_KEY` es estrictamente obligatoria vía `.env` o variable de entorno en todos los entornos (desarrollo, staging y producción), no solo en dev:
 
 ```dotenv
 POSTGRES_PASSWORD=local-development-password

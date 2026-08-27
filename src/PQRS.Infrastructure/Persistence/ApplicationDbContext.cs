@@ -26,6 +26,8 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<Ticket> Tickets => Set<Ticket>();
 
+    public DbSet<RagDeflection> RagDeflections => Set<RagDeflection>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -34,6 +36,7 @@ public sealed class ApplicationDbContext : DbContext
         ConfigureUser(modelBuilder);
         ConfigureKnowledgeBaseArticle(modelBuilder);
         ConfigureTicket(modelBuilder);
+        ConfigureRagDeflection(modelBuilder);
         ApplyTenantFilters(modelBuilder);
     }
 
@@ -176,6 +179,24 @@ public sealed class ApplicationDbContext : DbContext
             entity.HasIndex(ticket => new { ticket.TenantId, ticket.TrackingNumber }).IsUnique();
             entity.HasIndex(ticket => new { ticket.TenantId, ticket.Status });
             entity.HasIndex(ticket => new { ticket.TenantId, ticket.Priority });
+        });
+    }
+
+    private void ConfigureRagDeflection(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RagDeflection>(entity =>
+        {
+            entity.HasKey(deflection => deflection.Id);
+            if (Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                entity.Property(deflection => deflection.ArticleIds).HasColumnType("uuid[]").IsRequired();
+            }
+            else
+            {
+                entity.Property(deflection => deflection.ArticleIds).IsRequired();
+            }
+            entity.HasIndex(deflection => deflection.TenantId);
+            entity.HasIndex(deflection => deflection.CreatedAtUtc);
         });
     }
 }

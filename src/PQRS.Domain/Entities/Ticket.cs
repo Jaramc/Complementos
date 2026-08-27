@@ -49,8 +49,6 @@ public sealed class Ticket : ITenantEntity
 
     public string? Summary { get; private set; }
 
-    public bool ResolvedByRag { get; private set; }
-
     public DateTime CreatedAtUtc { get; private set; }
 
     public void ApplyTriage(TicketType type, TicketPriority priority, TicketSentiment sentiment, string summary)

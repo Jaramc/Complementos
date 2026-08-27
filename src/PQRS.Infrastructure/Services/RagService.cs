@@ -67,4 +67,19 @@ public sealed class RagService : IRagService
 
         return new RagSearchResponseDto(true, answer, Math.Max(0, 1 - matches[0].Distance), matches.Select(match => match.Article.Id).ToList());
     }
+
+    public async Task RecordDeflectionAsync(IEnumerable<Guid>? articleIds, CancellationToken cancellationToken = default)
+    {
+        if (!_currentTenantService.HasTenant || !_currentTenantService.TenantId.HasValue)
+        {
+            throw new UnauthorizedAccessException("A tenant context is required.");
+        }
+
+        var deflection = new PQRS.Domain.Entities.RagDeflection(
+            _currentTenantService.TenantId.Value,
+            articleIds);
+
+        _context.RagDeflections.Add(deflection);
+        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
 }

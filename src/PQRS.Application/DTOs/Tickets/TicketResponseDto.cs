@@ -15,5 +15,4 @@ public sealed record TicketResponseDto(
     TicketPriority Priority,
     TicketSentiment Sentiment,
     string? Summary,
-    bool ResolvedByRag,
     DateTime CreatedAtUtc);

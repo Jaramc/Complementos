@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PQRS.Infrastructure.Persistence;
@@ -12,9 +13,11 @@ using Pgvector;
 namespace PQRS.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260827223053_AddVectorIndex")]
+    partial class AddVectorIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,31 +60,6 @@ namespace PQRS.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("KnowledgeBaseArticles");
-                });
-
-            modelBuilder.Entity("PQRS.Domain.Entities.RagDeflection", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid[]>("ArticleIds")
-                        .IsRequired()
-                        .HasColumnType("uuid[]");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAtUtc");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("RagDeflections");
                 });
 
             modelBuilder.Entity("PQRS.Domain.Entities.Tenant", b =>
@@ -145,6 +123,9 @@ namespace PQRS.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
+
+                    b.Property<bool>("ResolvedByRag")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Sentiment")
                         .IsRequired()

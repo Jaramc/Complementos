@@ -29,6 +29,13 @@ public sealed class WidgetController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("rag-deflections")]
+    public async Task<IActionResult> RecordDeflection([FromBody] WidgetRagDeflectionDto request, CancellationToken cancellationToken)
+    {
+        await _ragService.RecordDeflectionAsync(request?.ArticleIds, cancellationToken).ConfigureAwait(false);
+        return Ok(new { success = true });
+    }
+
     [HttpPost("tickets")]
     public async Task<ActionResult<TicketCreatedResponseDto>> CreateTicket([FromBody] WidgetCreateTicketDto request, CancellationToken cancellationToken)
     {

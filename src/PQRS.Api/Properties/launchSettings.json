@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -19,7 +19,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JwtSettings__Issuer": "PQRS.SaaS.Platform",
         "JwtSettings__Audience": "PQRS.SaaS.Clients",
-        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
         "JwtSettings__ExpiryMinutes": "60"
       }
     },
@@ -33,7 +32,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JwtSettings__Issuer": "PQRS.SaaS.Platform",
         "JwtSettings__Audience": "PQRS.SaaS.Clients",
-        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
         "JwtSettings__ExpiryMinutes": "60"
       }
     },
@@ -45,7 +43,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JwtSettings__Issuer": "PQRS.SaaS.Platform",
         "JwtSettings__Audience": "PQRS.SaaS.Clients",
-        "JwtSettings__SecretKey": "super_secret_and_long_key_with_at_least_256_bits_length_for_hmac_sha256!",
         "JwtSettings__ExpiryMinutes": "60"
       }
     }
