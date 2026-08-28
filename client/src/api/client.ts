@@ -1,7 +1,11 @@
 import axios from 'axios';
 import type { CreateKbArticleRequest, KbArticle, RagSearchResponse, Ticket, TicketPriority, TicketStatus } from '../types';
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api/v1';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ??
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    ? '/api/v1'
+    : 'http://localhost:8080/api/v1');
 
 const client = axios.create({
   baseURL: API_BASE_URL,

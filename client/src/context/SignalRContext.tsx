@@ -28,7 +28,11 @@ export function SignalRProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const hubUrl = (import.meta.env.VITE_HUB_URL ?? 'http://localhost:8080') + '/hubs/tickets';
+    const baseOrigin =
+      typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+        ? window.location.origin
+        : 'http://localhost:8080';
+    const hubUrl = (import.meta.env.VITE_HUB_URL ?? baseOrigin) + '/hubs/tickets';
     signalRService.start(hubUrl, user.token);
 
     const unsubStatus = signalRService.onStatusChange((connected) => {
