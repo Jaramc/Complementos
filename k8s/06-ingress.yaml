@@ -5,8 +5,11 @@ metadata:
   namespace: pqrs-saas
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "pqrs-api"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - pqrs.jaramc.dev
@@ -81,42 +84,3 @@ spec:
                 name: pqrs-api
                 port:
                   number: 8080
-
-    # 4. Regla por defecto para acceso directo por IP (161.97.136.42)
-    - http:
-        paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: pqrs-api
-                port:
-                  number: 8080
-          - path: /hubs
-            pathType: Prefix
-            backend:
-              service:
-                name: pqrs-api
-                port:
-                  number: 8080
-          - path: /swagger
-            pathType: Prefix
-            backend:
-              service:
-                name: pqrs-api
-                port:
-                  number: 8080
-          - path: /pqrs-widget.js
-            pathType: Prefix
-            backend:
-              service:
-                name: pqrs-api
-                port:
-                  number: 8080
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: pqrs-client
-                port:
-                  number: 80
