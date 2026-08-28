@@ -46,7 +46,7 @@ spec:
                 port:
                   number: 8080
           - path: /pqrs-widget.js
-            pathType: Exact
+            pathType: Prefix
             backend:
               service:
                 name: pqrs-api
@@ -109,7 +109,7 @@ spec:
                 port:
                   number: 8080
           - path: /pqrs-widget.js
-            pathType: Exact
+            pathType: Prefix
             backend:
               service:
                 name: pqrs-api
