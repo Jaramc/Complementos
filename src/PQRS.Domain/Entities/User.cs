@@ -34,6 +34,11 @@ public sealed class User : ITenantEntity
 
     public DateTime CreatedAtUtc { get; private set; }
 
+    public void UpdatePassword(string passwordHash)
+    {
+        PasswordHash = RequireText(passwordHash, nameof(passwordHash));
+    }
+
     private static Guid RequireTenant(Guid tenantId) => tenantId == Guid.Empty
         ? throw new ArgumentException("TenantId must not be empty.", nameof(tenantId))
         : tenantId;

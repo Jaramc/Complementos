@@ -11,23 +11,17 @@ namespace PQRS.Infrastructure.Services;
 public sealed class DatabaseSeederHostedService : BackgroundService
 {
     private const string DemoApiKey = "demo-api-key";
-    private const string DemoEmail = "admin@demo.com";
+    private const string AdminEmail = "Ximenajaramc@jaramc.com";
+    private const string AdminPassword = "Xmnjaramc";
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IHostEnvironment _environment;
 
-    public DatabaseSeederHostedService(IServiceScopeFactory scopeFactory, IHostEnvironment environment)
+    public DatabaseSeederHostedService(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
-        _environment = environment ?? throw new ArgumentNullException(nameof(environment));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!_environment.IsDevelopment())
-        {
-            return;
-        }
-
         await using var scope = _scopeFactory.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
@@ -36,19 +30,25 @@ public sealed class DatabaseSeederHostedService : BackgroundService
         var tenant = await dbContext.Tenants.SingleOrDefaultAsync(candidate => candidate.ApiKey == apiKeyHash, stoppingToken).ConfigureAwait(false);
         if (tenant is null)
         {
-            tenant = new Tenant("Empresa Demo", new[] { "http://localhost:8080" }, apiKeyHash);
+            tenant = new Tenant("Empresa Demo", new[] { "http://localhost:8080", "https://pqrs.jaramc.dev", "https://support.jaramc.dev" }, apiKeyHash);
             dbContext.Tenants.Add(tenant);
             await dbContext.SaveChangesAsync(stoppingToken).ConfigureAwait(false);
         }
 
         currentTenantService.SetTenant(tenant.Id, tenant.Name, string.Join(',', tenant.AllowedOrigins));
 
-        var userExists = await dbContext.Users.IgnoreQueryFilters().AnyAsync(
-            user => user.TenantId == tenant.Id && user.Email == DemoEmail,
+        var user = await dbContext.Users.IgnoreQueryFilters().SingleOrDefaultAsync(
+            u => u.TenantId == tenant.Id && u.Email.ToLower() == AdminEmail.ToLower(),
             stoppingToken).ConfigureAwait(false);
-        if (!userExists)
+
+        if (user is null)
         {
-            dbContext.Users.Add(new User(tenant.Id, DemoEmail, passwordHasher.Hash("Admin123*"), UserRole.Admin));
+            dbContext.Users.Add(new User(tenant.Id, AdminEmail, passwordHasher.Hash(AdminPassword), UserRole.Admin));
+            await dbContext.SaveChangesAsync(stoppingToken).ConfigureAwait(false);
+        }
+        else
+        {
+            user.UpdatePassword(passwordHasher.Hash(AdminPassword));
             await dbContext.SaveChangesAsync(stoppingToken).ConfigureAwait(false);
         }
     }
