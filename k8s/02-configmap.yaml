@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pqrs-config
+  namespace: pqrs-saas
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_HTTP_PORTS: "8080"
+  POSTGRES_DB: "pqrs"
+  POSTGRES_USER: "pqrs_app"
+  OPENAI_CHAT_MODEL: "gpt-4o-mini"
+  JwtSettings__Issuer: "PQRS.SaaS.Platform"
+  JwtSettings__Audience: "PQRS.SaaS.Clients"
+  JwtSettings__ExpiryMinutes: "60"

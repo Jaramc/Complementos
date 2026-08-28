@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pqrs-ingress
+  namespace: pqrs-saas
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "pqrs-api"
+spec:
+  rules:
+    - http:
+        paths:
+          # API Endpoints & SignalR WebSockets
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: pqrs-api
+                port:
+                  number: 8080
+          - path: /hubs
+            pathType: Prefix
+            backend:
+              service:
+                name: pqrs-api
+                port:
+                  number: 8080
+          - path: /swagger
+            pathType: Prefix
+            backend:
+              service:
+                name: pqrs-api
+                port:
+                  number: 8080
+          - path: /pqrs-widget.js
+            pathType: Exact
+            backend:
+              service:
+                name: pqrs-api
+                port:
+                  number: 8080
+          # Frontend React SPA Dashboard
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pqrs-client
+                port:
+                  number: 80

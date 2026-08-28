@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pqrs-api
+  namespace: pqrs-saas
+  labels:
+    app: pqrs-api
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pqrs-api
+  template:
+    metadata:
+      labels:
+        app: pqrs-api
+        tier: backend
+    spec:
+      containers:
+        - name: api
+          image: pqrs-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: ASPNETCORE_HTTP_PORTS
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: ASPNETCORE_HTTP_PORTS
+            - name: OPENAI_CHAT_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: OPENAI_CHAT_MODEL
+            - name: JwtSettings__Issuer
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: JwtSettings__Issuer
+            - name: JwtSettings__Audience
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: JwtSettings__Audience
+            - name: JwtSettings__ExpiryMinutes
+              valueFrom:
+                configMapKeyRef:
+                  name: pqrs-config
+                  key: JwtSettings__ExpiryMinutes
+            - name: JwtSettings__SecretKey
+              valueFrom:
+                secretKeyRef:
+                  name: pqrs-secrets
+                  key: JWT_SECRET_KEY
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pqrs-secrets
+                  key: OPENAI_API_KEY
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pqrs-secrets
+                  key: POSTGRES_PASSWORD
+            - name: ConnectionStrings__Postgres
+              value: "Host=postgres;Port=5432;Database=pqrs;Username=pqrs_app;Password=$(POSTGRES_PASSWORD)"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "768Mi"
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /index.html
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pqrs-api
+  namespace: pqrs-saas
+  labels:
+    app: pqrs-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app: pqrs-api
