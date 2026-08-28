@@ -25,7 +25,7 @@ public sealed class AuthService : IAuthService
     {
         ArgumentNullException.ThrowIfNull(request);
         var email = request.Email.Trim().ToUpperInvariant();
-        var user = await _dbContext.Users.IgnoreQueryFilters().SingleOrDefaultAsync(
+        var user = await _dbContext.Users.IgnoreQueryFilters().FirstOrDefaultAsync(
             candidate => candidate.Email.ToUpper() == email,
             cancellationToken).ConfigureAwait(false);
 
@@ -34,7 +34,7 @@ public sealed class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid credentials.");
         }
 
-        var tenant = await _dbContext.Tenants.AsNoTracking().SingleOrDefaultAsync(
+        var tenant = await _dbContext.Tenants.AsNoTracking().FirstOrDefaultAsync(
             candidate => candidate.Id == user.TenantId && candidate.IsActive,
             cancellationToken).ConfigureAwait(false);
         if (tenant is null)

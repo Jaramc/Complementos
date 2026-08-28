@@ -27,7 +27,7 @@ public sealed class DatabaseSeederHostedService : BackgroundService
         var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
         var apiKeyHash = TenantStore.HashApiKey(DemoApiKey);
-        var tenant = await dbContext.Tenants.SingleOrDefaultAsync(candidate => candidate.ApiKey == apiKeyHash, stoppingToken).ConfigureAwait(false);
+        var tenant = await dbContext.Tenants.FirstOrDefaultAsync(candidate => candidate.ApiKey == apiKeyHash, stoppingToken).ConfigureAwait(false);
         if (tenant is null)
         {
             tenant = new Tenant("Empresa Demo", new[] { "http://localhost:8080", "https://pqrs.jaramc.dev", "https://support.jaramc.dev" }, apiKeyHash);
@@ -37,7 +37,7 @@ public sealed class DatabaseSeederHostedService : BackgroundService
 
         currentTenantService.SetTenant(tenant.Id, tenant.Name, string.Join(',', tenant.AllowedOrigins));
 
-        var user = await dbContext.Users.IgnoreQueryFilters().SingleOrDefaultAsync(
+        var user = await dbContext.Users.IgnoreQueryFilters().FirstOrDefaultAsync(
             u => u.TenantId == tenant.Id && u.Email.ToLower() == AdminEmail.ToLower(),
             stoppingToken).ConfigureAwait(false);
 
