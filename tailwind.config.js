@@ -8,13 +8,18 @@ export default {
     extend: {
       colors: {
         brand: {
-          light: '#BDDBB2',
-          surface: '#F6F9F5',
-          accent: '#ACBF77',
-          olive: '#BCB162',
-          earth: '#9D7C5D',
-          wine: '#743437',
-          'wine-dark': '#5c292b',
+          lilac: '#E7A8FF',
+          violet: '#BD99E8',
+          periwinkle: '#C3B5FF',
+          cornflower: '#99A0E8',
+          sky: '#A8C7FF',
+          wine: '#7856C7',
+          'wine-dark': '#5D3FA6',
+          light: '#E7A8FF',
+          surface: '#F8FAFF',
+          accent: '#BD99E8',
+          olive: '#99A0E8',
+          earth: '#797F9E',
         }
       }
     },

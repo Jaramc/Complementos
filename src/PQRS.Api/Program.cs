@@ -150,5 +150,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<PQRS.Infrastructure.SignalR.TicketHub>("/hubs/tickets");
+app.MapGet("/favicon.ico", () => Results.NoContent());
 
 app.Run();

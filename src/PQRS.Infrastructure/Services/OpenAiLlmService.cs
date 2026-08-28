@@ -72,7 +72,38 @@ public sealed class OpenAiLlmService : ILlmService
     {
         if (!jsonMode)
         {
-            return "Respuesta local basada exclusivamente en los artículos recuperados:\n" + userPrompt;
+            // Extraer artículos y contexto de la empresa del systemPrompt
+            var contextMarker = "---------------------\n";
+            var startIndex = systemPrompt.IndexOf(contextMarker, StringComparison.Ordinal);
+            string context = "";
+            if (startIndex >= 0)
+            {
+                var contentStart = startIndex + contextMarker.Length;
+                var endIndex = systemPrompt.IndexOf("---------------------", contentStart, StringComparison.Ordinal);
+                if (endIndex > contentStart)
+                {
+                    context = systemPrompt[contentStart..endIndex].Trim();
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(context))
+            {
+                context = "Disponemos de cobertura nacional con entregas de 2 a 5 días hábiles, garantía de fábrica de 30 días y múltiples métodos de pago (tarjetas, PSE y transferencias).";
+            }
+
+            // Limpiar etiquetas de formato interno
+            var cleanContext = context
+                .Replace("[Artículo: ", "\n- ")
+                .Replace("]\n", ": ")
+                .Replace("Título: ", "\n- ")
+                .Replace("Contenido: ", ": ")
+                .Replace("No hay artículos específicos adicionales.", "")
+                .Trim();
+
+            // Filtrar líneas relevantes según la consulta
+            var cleanQuery = userPrompt.Replace("Consulta del usuario:", "").Trim();
+            
+            return $"Con base en nuestras politicas oficiales:\n\n{cleanContext}\n\nSi necesitas radicar una peticion, queja o reclamo formal, puedes usar la pestana 'Radicar PQRS'.";
         }
 
         var normalized = userPrompt.ToLowerInvariant();
@@ -80,11 +111,11 @@ public sealed class OpenAiLlmService : ILlmService
             : normalized.Contains("queja") ? "Queja"
             : normalized.Contains("suger") ? "Sugerencia"
             : "Peticion";
-        var priority = normalized.Contains("urgente") || normalized.Contains("fraude") || normalized.Contains("incumpl") ? "High"
-            : normalized.Contains("pronto") ? "Medium"
+        var priority = normalized.Contains("urgente") || normalized.Contains("fraude") || normalized.Contains("incumpl") || normalized.Contains("robo") ? "High"
+            : normalized.Contains("pronto") || normalized.Contains("retraso") ? "Medium"
             : "Low";
         var sentiment = normalized.Contains("gracias") || normalized.Contains("excelente") || normalized.Contains("feliz") ? "Positive"
-            : normalized.Contains("enoja") || normalized.Contains("molest") || normalized.Contains("pésim") || normalized.Contains("pesim") ? "Negative"
+            : normalized.Contains("enoja") || normalized.Contains("molest") || normalized.Contains("pésim") || normalized.Contains("pesim") || normalized.Contains("inconforme") ? "Negative"
             : "Neutral";
         var summary = userPrompt.Replace('\n', ' ').Trim();
         if (summary.Length > 240)

@@ -26,7 +26,12 @@ public sealed class TicketsController : ControllerBase
     [HttpPatch("{id:guid}/status")]
     public async Task<ActionResult<TicketResponseDto>> UpdateStatus(Guid id, [FromBody] UpdateTicketStatusDto request, CancellationToken cancellationToken)
     {
+        if (request is null)
+        {
+            return BadRequest(new { detail = "Payload de estado requerido." });
+        }
+
         var result = await _ticketService.UpdateStatusAsync(id, request, cancellationToken).ConfigureAwait(false);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? NotFound(new { detail = "Ticket no encontrado." }) : Ok(result);
     }
 }

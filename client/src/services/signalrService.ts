@@ -1,22 +1,38 @@
-import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import type { TicketCreatedAlert } from '../types';
 import { normalizePriority, normalizeSentiment, normalizeTicketType } from '../utils/normalizers';
 
 export class SignalRService {
   private connection: HubConnection | null = null;
+  private isStarting = false;
   private listeners: ((alert: TicketCreatedAlert) => void)[] = [];
   private statusListeners: ((connected: boolean) => void)[] = [];
 
-  public start(hubUrl: string, token: string): void {
-    if (this.connection && this.connection.state === HubConnectionState.Connected) {
+  public async start(hubUrl: string, token: string): Promise<void> {
+    if (!token) return;
+
+    if (this.connection && (this.connection.state === HubConnectionState.Connected || this.connection.state === HubConnectionState.Connecting)) {
       return;
+    }
+
+    if (this.isStarting) return;
+    this.isStarting = true;
+
+    if (this.connection) {
+      try {
+        await this.connection.stop();
+      } catch {
+        // Ignorar errores al detener conexión previa
+      }
     }
 
     this.connection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => token,
+        skipNegotiation: false,
+        transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling,
       })
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
       .configureLogging(LogLevel.Warning)
       .build();
 
@@ -26,7 +42,7 @@ export class SignalRService {
         type: normalizeTicketType(alert.type),
         priority: normalizePriority(alert.priority),
         sentiment: normalizeSentiment(alert.sentiment),
-        timestamp: new Date().toISOString(),
+        timestamp: alert.timestamp ?? new Date().toISOString(),
         read: false,
       };
       this.listeners.forEach((listener) => listener(enrichedAlert));
@@ -40,21 +56,31 @@ export class SignalRService {
       this.notifyStatus(false);
     });
 
-    this.connection
-      .start()
-      .then(() => {
-        this.notifyStatus(true);
-      })
-      .catch(() => {
-        this.notifyStatus(false);
-      });
+    try {
+      await this.connection.start();
+      this.notifyStatus(true);
+    } catch (err: unknown) {
+      this.notifyStatus(false);
+      const message = err instanceof Error ? err.message : String(err);
+      if (!message.includes('stopped during negotiation')) {
+        console.warn('[SignalR] No se pudo conectar de inmediato:', message);
+      }
+    } finally {
+      this.isStarting = false;
+    }
   }
 
-  public stop(): void {
+  public async stop(): Promise<void> {
     if (this.connection) {
-      this.connection.stop();
+      const conn = this.connection;
       this.connection = null;
-      this.notifyStatus(false);
+      try {
+        await conn.stop();
+      } catch {
+        // Ignorar
+      } finally {
+        this.notifyStatus(false);
+      }
     }
   }
 
@@ -84,35 +110,69 @@ export class SignalRService {
 
 export const signalRService = new SignalRService();
 
-let defaultConnection: HubConnection | null = null;
+let connection: HubConnection | null = null;
+let isStarting = false;
 
-export const initSignalR = (token: string, onTicketAlert: (ticket: TicketCreatedAlert) => void): HubConnection => {
-  if (defaultConnection) {
-    defaultConnection.stop();
+export const startSignalR = async (token: string, onTicketAlert: (ticket: TicketCreatedAlert) => void): Promise<HubConnection | null | undefined> => {
+  if (!token) return;
+
+  if (connection && (connection.state === HubConnectionState.Connected || connection.state === HubConnectionState.Connecting)) {
+    return connection;
   }
 
-  defaultConnection = new HubConnectionBuilder()
-    .withUrl((import.meta.env.VITE_HUB_URL ?? 'http://localhost:8080') + '/hubs/tickets', {
+  if (isStarting) return;
+  isStarting = true;
+
+  if (connection) {
+    try {
+      await connection.stop();
+    } catch {
+      // Ignorar errores al detener previo
+    }
+  }
+
+  const hubUrl = (import.meta.env.VITE_HUB_URL ?? 'http://localhost:8080') + '/hubs/tickets';
+
+  connection = new HubConnectionBuilder()
+    .withUrl(hubUrl, {
       accessTokenFactory: () => token,
+      skipNegotiation: false,
+      transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling,
     })
-    .withAutomaticReconnect()
+    .withAutomaticReconnect([0, 2000, 5000, 10000])
+    .configureLogging(LogLevel.Warning)
     .build();
 
-  defaultConnection.on('ReceiveTicketAlert', (ticket: TicketCreatedAlert) => {
+  connection.on('ReceiveTicketAlert', (ticket: TicketCreatedAlert) => {
     onTicketAlert(ticket);
   });
 
-  defaultConnection.start().catch((err) => {
-    console.error('[SignalR] Error al conectar:', err);
-  });
+  try {
+    await connection.start();
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (!message.includes('stopped during negotiation')) {
+      console.warn('[SignalR] No se pudo conectar de inmediato:', message);
+    }
+  } finally {
+    isStarting = false;
+  }
 
-  return defaultConnection;
+  return connection;
 };
 
-export const stopSignalR = (): void => {
-  if (defaultConnection) {
-    defaultConnection.stop();
-    defaultConnection = null;
+export const stopSignalR = async (): Promise<void> => {
+  if (connection) {
+    const conn = connection;
+    connection = null;
+    try {
+      await conn.stop();
+    } catch {
+      // Ignorar
+    }
   }
 };
+
+export const initSignalR = startSignalR;
+
 

@@ -9,6 +9,12 @@ const client = axios.create({
 });
 
 client.interceptors.request.use((config) => {
+  const directToken = localStorage.getItem('pqrs_token');
+  if (directToken) {
+    config.headers.Authorization = `Bearer ${directToken}`;
+    return config;
+  }
+
   const storedUser = localStorage.getItem('pqrs_user');
   if (storedUser) {
     try {

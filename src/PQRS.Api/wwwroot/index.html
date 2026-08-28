@@ -1,24 +1,301 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PQRS | Widget local</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Ayuda & Experiencia de Cliente | Portal Demo</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              lilac: '#E7A8FF',
+              violet: '#BD99E8',
+              periwinkle: '#C3B5FF',
+              cornflower: '#99A0E8',
+              sky: '#A8C7FF',
+              wine: '#7856C7',
+              'wine-dark': '#5D3FA6',
+              light: '#E7A8FF',
+              surface: '#F8FAFF',
+              accent: '#BD99E8',
+              olive: '#99A0E8',
+              earth: '#797F9E'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { color-scheme: light; font-family: Georgia, 'Times New Roman', serif; color: #19212b; background: #eef3f2; }
-    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #eef3f2 0%, #f9f7f1 52%, #dce9e8 100%); }
-    main { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 14vh 0; }
-    p { max-width: 560px; color: #53636d; font: 16px/1.65 ui-sans-serif, system-ui, sans-serif; }
-    .kicker { margin: 0 0 14px; color: #176b87; font: 700 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
-    h1 { max-width: 680px; margin: 0; font-size: clamp(42px, 8vw, 86px); line-height: .98; font-weight: 500; letter-spacing: -0.03em; }
+    body { font-family: 'Inter', sans-serif; }
+    .hero-pattern {
+      background-color: #F6F9F5;
+      background-image: radial-gradient(rgba(116, 52, 55, 0.08) 1px, transparent 1px), radial-gradient(rgba(157, 124, 93, 0.08) 1px, #F6F9F5 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+    }
   </style>
 </head>
-<body>
-  <main>
-    <p class="kicker">Empresa Demo / entorno local</p>
-    <h1>Encuentra una respuesta. Radica cuando haga falta.</h1>
-    <p>Esta página carga el widget PQRS autónomo para probar consultas de conocimiento y radicación de solicitudes.</p>
-  </main>
-  <script src="/pqrs-widget.js" data-tenant="5303da30-d1f9-4a61-922f-fd4319e45037" data-api-url=""></script>
+<body class="bg-brand-surface text-stone-900 antialiased selection:bg-brand-light selection:text-brand-wine">
+
+  <!-- Navbar Superior -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-brand-earth/15">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-wine flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          P
+        </div>
+        <div>
+          <span class="font-extrabold text-stone-900 tracking-tight text-lg">NovaTech Support</span>
+          <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-brand-light/60 text-brand-wine border border-brand-accent/40">Portal Demo Tenant</span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+        <a href="#articulos" class="hover:text-brand-wine transition">Guias de Autoayuda</a>
+        <a href="#faqs" class="hover:text-brand-wine transition">Preguntas Frecuentes</a>
+        <a href="#canales" class="hover:text-brand-wine transition">Canales Oficiales</a>
+        <a href="http://localhost:5173" target="_blank" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-brand-light/40 text-brand-wine border border-brand-accent/50 hover:bg-brand-light transition">
+          <span>Panel de Agentes</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-pattern py-16 md:py-24 border-b border-brand-earth/15">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-brand-earth/20 shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-brand-earth">Asistente IA de Soporte Activo</span>
+      </div>
+      
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.15]">
+        Como podemos ayudarte <br class="hidden sm:inline"/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-wine to-brand-earth">el dia de hoy?</span>
+      </h1>
+      
+      <p class="text-base sm:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+        Resuelve tus dudas en segundos mediante nuestro copiloto inteligente RAG o radica tus Peticiones, Quejas, Reclamos y Sugerencias directamente desde el widget flotante.
+      </p>
+
+      <!-- Barra de simulación interactiva que abre el widget -->
+      <div class="max-w-xl mx-auto pt-4">
+        <div class="relative flex items-center bg-white rounded-2xl p-2 shadow-lg border border-brand-earth/20 focus-within:ring-2 focus-within:ring-brand-accent transition">
+          <svg class="w-5 h-5 text-stone-400 ml-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input 
+            type="text" 
+            id="hero-search-input" 
+            placeholder="Ej: Cuales son las politicas de reembolso o tiempos de entrega?" 
+            class="w-full px-3 py-2 text-sm text-stone-800 placeholder-stone-400 bg-transparent focus:outline-none"
+          />
+          <button 
+            type="button" 
+            id="hero-search-btn"
+            class="px-5 py-2.5 rounded-xl bg-brand-wine hover:bg-brand-wine-dark text-white text-xs font-semibold shrink-0 shadow-xs transition"
+          >
+            Consultar con IA
+          </button>
+        </div>
+        <div class="flex items-center justify-center gap-2 mt-3 text-xs text-stone-500">
+          <span>Sugerencias rapidas:</span>
+          <button type="button" class="quick-chip hover:text-brand-wine font-medium underline underline-offset-2">Envios nacionales</button>
+          <span>-</span>
+          <button type="button" class="quick-chip hover:text-brand-wine font-medium underline underline-offset-2">Garantias</button>
+          <span>-</span>
+          <button type="button" class="quick-chip hover:text-brand-wine font-medium underline underline-offset-2">Facturacion electronica</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías Principales de Autoayuda -->
+  <section id="articulos" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900">Temas y Documentacion Frecuente</h2>
+      <p class="text-sm text-brand-earth mt-2">Explora los modulos de conocimiento indexados en la base vectorial del Tenant.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Tarjeta 1 -->
+      <div class="bg-white rounded-3xl p-8 border border-brand-earth/20 shadow-xs hover:shadow-md hover:border-brand-accent transition group">
+        <div class="w-12 h-12 rounded-2xl bg-brand-light/50 flex items-center justify-center text-brand-wine text-lg font-bold mb-6 group-hover:scale-110 transition-transform">
+          ENV
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Envios y Despachos</h3>
+        <p class="text-sm text-stone-600 leading-relaxed mb-4">
+          Tiempos de entrega estandar a nivel nacional (2 a 5 dias habiles), cobertura en ciudades principales y seguimiento logistico.
+        </p>
+        <span class="inline-flex items-center text-xs font-semibold text-brand-wine gap-1">
+          Base RAG Activa &rarr;
+        </span>
+      </div>
+
+      <!-- Tarjeta 2 -->
+      <div class="bg-white rounded-3xl p-8 border border-brand-earth/20 shadow-xs hover:shadow-md hover:border-brand-accent transition group">
+        <div class="w-12 h-12 rounded-2xl bg-brand-light/50 flex items-center justify-center text-brand-wine text-lg font-bold mb-6 group-hover:scale-110 transition-transform">
+          GAR
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Garantias y Devoluciones</h3>
+        <p class="text-sm text-stone-600 leading-relaxed mb-4">
+          Cobertura de 30 dias calendario por defectos de fabrica y procedimientos para reembolsos bancarios en 3 a 5 dias habiles.
+        </p>
+        <span class="inline-flex items-center text-xs font-semibold text-brand-wine gap-1">
+          Base RAG Activa &rarr;
+        </span>
+      </div>
+
+      <!-- Tarjeta 3 -->
+      <div class="bg-white rounded-3xl p-8 border border-brand-earth/20 shadow-xs hover:shadow-md hover:border-brand-accent transition group">
+        <div class="w-12 h-12 rounded-2xl bg-brand-light/50 flex items-center justify-center text-brand-wine text-lg font-bold mb-6 group-hover:scale-110 transition-transform">
+          PAG
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Pagos y Facturacion</h3>
+        <p class="text-sm text-stone-600 leading-relaxed mb-4">
+          Canales de pago disponibles (Tarjetas, Debito PSE), facturacion electronica enviada al correo en menos de 24 horas.
+        </p>
+        <span class="inline-flex items-center text-xs font-semibold text-brand-wine gap-1">
+          Base RAG Activa &rarr;
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Banner de Flujo PQRS en Dos Fases -->
+  <section class="py-12 bg-white border-y border-brand-earth/15">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-brand-wine to-brand-wine-dark rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="space-y-4 max-w-xl z-10">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-brand-light border border-white/10">
+            Arquitectura de Soporte de 2 Fases
+          </span>
+          <h3 class="text-2xl sm:text-3xl font-bold leading-tight">
+            No encontraste lo que buscabas? Radica formalmente tu caso.
+          </h3>
+          <p class="text-xs sm:text-sm text-stone-200 leading-relaxed">
+            Nuestro sistema procesa tu solicitud en tiempo real con triaje automatico (Tipo, Prioridad y Sentimiento) asignando un radicado unico de seguimiento.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0 z-10">
+          <button 
+            type="button" 
+            id="trigger-widget-form"
+            class="px-6 py-3.5 rounded-xl bg-brand-light text-stone-900 hover:bg-brand-accent text-sm font-bold shadow-lg transition"
+          >
+            Abrir Formulario PQRS
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preguntas Frecuentes (Acordeón) -->
+  <section id="faqs" class="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900">Preguntas Frecuentes</h2>
+      <p class="text-sm text-brand-earth mt-2">Dudas habituales sobre la radicacion y resolucion de casos.</p>
+    </div>
+
+    <div class="space-y-4">
+      <details class="group bg-white rounded-2xl border border-brand-earth/20 p-6 shadow-xs open:ring-1 open:ring-brand-accent">
+        <summary class="flex justify-between items-center font-bold text-stone-900 cursor-pointer list-none text-base">
+          <span>Cuanto tiempo tarda la respuesta a una PQRS formal?</span>
+          <span class="transition group-open:rotate-180">&#9662;</span>
+        </summary>
+        <p class="text-sm text-stone-600 mt-4 leading-relaxed border-t border-brand-earth/10 pt-4">
+          Conforme a las politicas de servicio y la Ley 1755, las peticiones y sugerencias se resuelven en un plazo maximo de 10 a 15 dias habiles. Las quejas y reclamos de alta prioridad se priorizan automaticamente mediante el triaje de IA para una atencion oportuna.
+        </p>
+      </details>
+
+      <details class="group bg-white rounded-2xl border border-brand-earth/20 p-6 shadow-xs open:ring-1 open:ring-brand-accent">
+        <summary class="flex justify-between items-center font-bold text-stone-900 cursor-pointer list-none text-base">
+          <span>Como realizo el seguimiento a mi numero de radicado?</span>
+          <span class="transition group-open:rotate-180">&#9662;</span>
+        </summary>
+        <p class="text-sm text-stone-600 mt-4 leading-relaxed border-t border-brand-earth/10 pt-4">
+          Al enviar tu solicitud formal recibiras un codigo unico en formato <code class="font-mono text-xs bg-brand-surface px-2 py-1 rounded text-brand-wine font-bold">PQRS-YYYYMMDD...</code>. Puedes conservarlo o consultarlo con los agentes de soporte.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Footer Corporativo -->
+  <footer id="canales" class="bg-white border-t border-brand-earth/15 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-brand-earth">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg bg-brand-wine flex items-center justify-center text-white font-bold text-xs">P</div>
+        <span class="font-semibold text-stone-800">PQRS SaaS Multi-tenant &copy; 2026</span>
+      </div>
+      <div>
+        <span>Desarrollado con ASP.NET Core (.NET 8), PostgreSQL + pgvector y React.</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Tenant ID: <strong class="text-stone-700 font-mono">5303da30-d1f9-4a61-922f-fd4319e45037</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lógica para enlazar la UI de la página con el Widget incrustado -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('hero-search-input');
+      const searchBtn = document.getElementById('hero-search-btn');
+      const triggerFormBtn = document.getElementById('trigger-widget-form');
+      const chips = document.querySelectorAll('.quick-chip');
+
+      const openWidgetWithAction = (tab, query = '') => {
+        const widgetEl = document.querySelector('pqrs-widget');
+        if (widgetEl && widgetEl.shadowRoot) {
+          widgetEl.state.isOpen = true;
+          widgetEl.state.tab = tab;
+          widgetEl.render();
+
+          if (query && tab === 'chat') {
+            const chatInput = widgetEl.shadowRoot.querySelector('input[name="query"]');
+            if (chatInput) {
+              chatInput.value = query;
+              const form = widgetEl.shadowRoot.querySelector('#chat-form');
+              form?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          }
+        }
+      };
+
+      searchBtn?.addEventListener('click', () => {
+        const query = searchInput.value.trim();
+        openWidgetWithAction('chat', query || 'Cuales son las politicas de atencion?');
+      });
+
+      searchInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchBtn.click();
+        }
+      });
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          openWidgetWithAction('chat', chip.textContent.trim());
+        });
+      });
+
+      triggerFormBtn?.addEventListener('click', () => {
+        openWidgetWithAction('form');
+      });
+    });
+  </script>
+
+  <!-- Inyección Oficial del Widget Web Multi-tenant -->
+  <script src="/pqrs-widget.js" data-tenant="5303da30-d1f9-4a61-922f-fd4319e45037" data-api-url="http://localhost:8080"></script>
 </body>
 </html>

@@ -18,9 +18,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await client.post<User>('/auth/login', { email, password });
       setUser(data);
       localStorage.setItem('pqrs_user', JSON.stringify(data));
+      if (data.token) {
+        localStorage.setItem('pqrs_token', data.token);
+      }
     } finally { setIsLoading(false); }
   };
 
-  const logout = () => { setUser(null); localStorage.removeItem('pqrs_user'); };
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('pqrs_user');
+    localStorage.removeItem('pqrs_token');
+  };
   return <AuthContext.Provider value={{ user, isLoading, login, logout }}>{children}</AuthContext.Provider>;
 }

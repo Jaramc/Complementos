@@ -65,17 +65,17 @@ export function DashboardLayout() {
         <aside
           className={`${
             mobileOpen ? 'fixed inset-y-0 left-0 z-50 flex w-72' : 'hidden'
-          } shrink-0 flex-col border-r border-brand-earth/15 bg-white px-4 py-6 shadow-sm lg:static lg:flex lg:w-64`}
+          } shrink-0 flex-col border-r border-brand-periwinkle/30 bg-white px-4 py-6 shadow-xs lg:static lg:flex lg:w-64`}
         >
           {/* Logo & Header */}
           <div className="flex items-center justify-between px-2 mb-8">
             <div className="flex items-center gap-3">
-              <div className="grid size-10 place-items-center rounded-xl bg-brand-wine text-white shadow-md">
+              <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-brand-violet to-brand-cornflower text-white shadow-md shadow-brand-violet/25">
                 <ShieldCheck size={22} />
               </div>
               <div>
-                <p className="font-bold tracking-tight text-base text-brand-wine">PQRS SaaS</p>
-                <p className="text-[11px] font-medium text-brand-earth uppercase tracking-wider">AI Operations</p>
+                <p className="font-extrabold tracking-tight text-base text-brand-wine">PQRS SaaS</p>
+                <p className="text-[11px] font-bold text-brand-cornflower uppercase tracking-wider">AI Operations</p>
               </div>
             </div>
             {mobileOpen && (
@@ -91,7 +91,7 @@ export function DashboardLayout() {
 
           {/* Navigation */}
           <nav className="space-y-1.5 flex-1" aria-label="Navegación principal">
-            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-earth/80">
+            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-stone-400">
               Plataforma
             </p>
             {navigationLinks.map(({ to, label, icon: Icon, badge }) => (
@@ -101,10 +101,10 @@ export function DashboardLayout() {
                 end={to === '/'}
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition-all ${
+                  `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold transition-all ${
                     isActive
-                      ? 'bg-brand-light/40 text-brand-wine border-r-4 border-brand-wine shadow-xs'
-                      : 'text-stone-600 hover:bg-brand-light/20 hover:text-stone-900'
+                      ? 'bg-brand-lilac/25 text-brand-wine border-r-4 border-brand-violet shadow-2xs'
+                      : 'text-stone-600 hover:bg-brand-periwinkle/20 hover:text-stone-900'
                   }`
                 }
               >
@@ -113,7 +113,7 @@ export function DashboardLayout() {
                   <span>{label}</span>
                 </div>
                 {badge && (
-                  <span className="rounded-md bg-brand-light/50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-wine">
+                  <span className="rounded-md bg-brand-sky/40 px-1.5 py-0.5 text-[10px] font-bold text-brand-wine">
                     {badge}
                   </span>
                 )}
@@ -123,14 +123,14 @@ export function DashboardLayout() {
 
           {/* Tenant & User Footer */}
           <div className="mt-auto pt-4 space-y-3 border-t border-stone-100">
-            <div className="rounded-xl bg-brand-surface p-3 border border-brand-earth/15">
+            <div className="rounded-xl bg-brand-surface p-3 border border-brand-periwinkle/40">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[11px] font-semibold text-brand-earth uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
                   Tenant Activo
                 </span>
                 <span className="flex size-2 rounded-full bg-emerald-500 ring-2 ring-emerald-200" />
               </div>
-              <p className="mt-1 font-semibold text-xs text-stone-800">Empresa Demo</p>
+              <p className="mt-1 font-bold text-xs text-stone-800">Empresa Demo</p>
               <p className="font-mono text-[10px] text-stone-400 truncate mt-0.5" title={user?.tenantId}>
                 {user?.tenantId}
               </p>
@@ -138,17 +138,17 @@ export function DashboardLayout() {
 
             <div className="flex items-center justify-between px-2 pt-1">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-light text-brand-wine font-semibold text-xs">
-                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-sky/30 text-brand-wine font-bold text-xs">
+                  {user?.email?.charAt(0).toUpperCase() || 'A'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-stone-800 truncate">{user?.email}</p>
-                  <p className="text-[10px] text-stone-500 capitalize">{user?.role || 'Agente'}</p>
+                  <p className="text-xs font-bold text-stone-800 truncate">{user?.email}</p>
+                  <p className="text-[10px] text-stone-400 capitalize">{user?.role || 'Admin'}</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="rounded-lg p-1.5 text-stone-400 hover:bg-brand-wine/10 hover:text-brand-wine transition"
+                className="rounded-lg p-1.5 text-stone-400 hover:bg-brand-lilac/20 hover:text-brand-wine transition"
                 title="Cerrar sesión"
                 aria-label="Cerrar sesión"
               >
